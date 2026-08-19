@@ -82,25 +82,21 @@ revealTargets.forEach((el) => revealObserver.observe(el));
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-// Preloader: reveal hero once the page has had a minimum beat on screen
+// Preloader: reveal hero after a brief beat. Script runs at end of body (DOM
+// already parsed), so this doesn't need to wait on readyState/load — and a
+// CSS animation (see .preloader) force-hides it too as a hard safety net.
 const preloader = document.getElementById('preloader');
-const MIN_PRELOAD_MS = prefersReducedMotion ? 0 : 700;
-const preloadStart = Date.now();
+const MIN_PRELOAD_MS = prefersReducedMotion ? 0 : 500;
+let revealed = false;
 
 const revealPage = () => {
-  const elapsed = Date.now() - preloadStart;
-  const wait = Math.max(0, MIN_PRELOAD_MS - elapsed);
-  setTimeout(() => {
-    if (preloader) preloader.classList.add('is-hidden');
-    document.body.classList.add('ready');
-  }, wait);
+  if (revealed) return;
+  revealed = true;
+  if (preloader) preloader.classList.add('is-hidden');
+  document.body.classList.add('ready');
 };
 
-if (document.readyState === 'complete') {
-  revealPage();
-} else {
-  window.addEventListener('load', revealPage);
-}
+setTimeout(revealPage, MIN_PRELOAD_MS);
 
 // Scroll progress bar
 const scrollProgress = document.getElementById('scrollProgress');

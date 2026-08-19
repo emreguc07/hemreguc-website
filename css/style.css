@@ -64,6 +64,10 @@ html { scroll-behavior: smooth; }
   50% { opacity: 1; transform: scale(1.02); }
 }
 
+@keyframes preloaderAutoHide {
+  to { opacity: 0; visibility: hidden; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
@@ -92,6 +96,9 @@ body {
   justify-content: center;
   background: var(--bg);
   transition: opacity 0.5s ease, visibility 0.5s ease;
+  pointer-events: none;
+  /* Safety net: force-hide even if JS never runs (blocked script, race, cache hiccup) */
+  animation: preloaderAutoHide 0.01s linear 2.5s forwards;
 }
 .preloader-logo {
   width: 72px;
