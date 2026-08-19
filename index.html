@@ -13,6 +13,15 @@
 </head>
 <body>
 
+<div id="preloader" class="preloader" aria-hidden="true">
+  <img src="assets/logo-transparent.png" alt="" class="preloader-logo">
+</div>
+
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+<div class="grain-overlay" aria-hidden="true"></div>
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
 <div class="bg-decor" aria-hidden="true"></div>
 
 <header class="site-header">
@@ -43,12 +52,12 @@
       <img src="assets/logo-transparent.png" width="220" height="220" alt="Hasan Emre Güç logo">
     </div>
     <div class="hero-text">
-      <h1>HASAN EMRE <span class="accent">GÜÇ</span></h1>
+      <h1 class="split-title" aria-label="HASAN EMRE GÜÇ"><span aria-hidden="true"><span class="word"><span class="word-inner">HASAN</span></span> <span class="word"><span class="word-inner">EMRE</span></span> <span class="word accent"><span class="word-inner">GÜÇ</span></span></span></h1>
       <p class="tagline">GELİŞTİRİCİ <span class="slash">//</span> YAZILIM MÜHENDİSİ</p>
       <p class="hero-sub">Mobil uygulamalar ve backend sistemler geliştiriyorum. Fikirden çalışan ürüne kadar tüm süreci kod, tasarım ve mühendislik disipliniyle kuruyorum.</p>
       <div class="hero-actions">
-        <a href="#projects" class="btn btn-primary">Projelerimi Gör</a>
-        <a href="#contact" class="btn btn-ghost">İletişime Geç</a>
+        <a href="#projects" class="btn btn-primary magnetic">Projelerimi Gör</a>
+        <a href="#contact" class="btn btn-ghost magnetic">İletişime Geç</a>
       </div>
     </div>
   </section>
@@ -56,7 +65,7 @@
   <section id="projects" class="section container reveal">
     <h2 class="section-title"><span class="num">01.</span> Projeler</h2>
     <div class="projects-grid reveal-stagger" id="projectsGrid">
-      <article class="project-card featured reveal-item">
+      <article class="project-card featured reveal-item tilt">
         <div class="project-tag">Öne Çıkan</div>
         <h3>Yakorra</h3>
         <p>Türkçe rüya günlüğü mobil uygulaması. Kullanıcının anlattığı rüyayı yapay zekâ ile yeniden yazıp, başlık, psikolojik/geleneksel/rehberlik yorumu ve illüstratif bir görsel üretiyor. Flutter istemci + Express backend, çoklu LLM/görsel-üretim sağlayıcı arasında otomatik yedekleme zinciri.</p>
@@ -68,7 +77,7 @@
         </ul>
       </article>
 
-      <article class="project-card reveal-item">
+      <article class="project-card reveal-item tilt">
         <div class="project-tag">Yakında</div>
         <h3>Yeni Proje</h3>
         <p>Yakında eklenecek. Bu alan bir sonraki projeni tanıtmak için hazır.</p>
@@ -103,7 +112,7 @@
   <section id="contact" class="section container contact reveal">
     <h2 class="section-title"><span class="num">03.</span> İletişim</h2>
     <p class="contact-lead">Bir proje fikrin mi var, yoksa sadece merhaba mı demek istiyorsun? Yazman yeterli.</p>
-    <a class="btn btn-primary contact-cta" href="mailto:emreguc22@gmail.com">emreguc22@gmail.com</a>
+    <a class="btn btn-primary contact-cta magnetic" href="mailto:emreguc22@gmail.com">emreguchasan@gmail.com</a>
     <div class="social-links">
       <a href="#" aria-label="GitHub">GitHub</a>
       <a href="#" aria-label="LinkedIn">LinkedIn</a>
