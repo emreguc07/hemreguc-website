@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projeler — Hasan Emre Güç</title>
+<meta name="description" content="Hasan Emre Güç'ün geliştirdiği projeler.">
+<link rel="icon" type="image/png" href="assets/logo-transparent.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+<header class="site-header">
+  <nav class="nav container">
+    <a href="index.html" class="brand">
+      <img src="assets/logo-transparent.png" alt="" class="brand-mark">
+      <span class="brand-name">HASAN EMRE GÜÇ</span>
+    </a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Menüyü aç/kapat" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <ul class="nav-links" id="navLinks">
+      <li class="nav-indicator" id="navIndicator" aria-hidden="true"></li>
+      <li><a href="projeler.html" class="active">PROJELER</a></li>
+      <li><a href="hakkimda.html">HAKKIMDA</a></li>
+      <li><a href="iletisim.html">İLETİŞİM</a></li>
+      <li><a href="blog.html">BLOG</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="page-main">
+  <section class="section page-hero reveal">
+    <h2 class="section-title"><span class="num">01.</span> Projeler</h2>
+    <div class="projects-grid">
+      <article class="project-card">
+        <div class="project-tag">Öne Çıkan</div>
+        <h3>Yakorra</h3>
+        <p>Türkçe rüya günlüğü mobil uygulaması. Kullanıcının anlattığı rüyayı yapay zekâ ile yeniden yazıp, başlık, psikolojik/geleneksel/rehberlik yorumu ve illüstratif bir görsel üretiyor. Flutter istemci + Express backend, çoklu LLM/görsel-üretim sağlayıcı arasında otomatik yedekleme zinciri.</p>
+        <ul class="tech-list">
+          <li>Flutter</li>
+          <li>Node.js / Express</li>
+          <li>Firebase</li>
+          <li>Gemini / Groq</li>
+        </ul>
+      </article>
+
+      <article class="project-card">
+        <div class="project-tag">Yakında</div>
+        <h3>Yeni Proje</h3>
+        <p>Yakında eklenecek. Bu alan bir sonraki projeni tanıtmak için hazır.</p>
+        <ul class="tech-list">
+          <li>—</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; <span id="year"></span> Hasan Emre Güç. Tüm hakları saklıdır.</p>
+  </div>
+</footer>
+
+<script src="js/script.js"></script>
+</body>
+</html>

@@ -1,23 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HEG Apps</title>
-<meta name="description" content="HEG Apps — precision engineering in every layer.">
+<title>Hasan Emre Güç — Yazılım Geliştirici</title>
+<meta name="description" content="Hasan Emre Güç — yazılım geliştirici ve mühendis. Projeler, hakkında ve iletişim.">
 <link rel="icon" type="image/png" href="assets/logo-transparent.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="is-loading">
 
 <div class="preloader" id="preloader" aria-hidden="true">
-  <div class="preloader-mark">HEG APPS</div>
+  <img src="assets/logo-transparent.png" alt="" class="preloader-logo">
   <div class="preloader-count" id="preloaderCount">0%</div>
   <div class="preloader-bar"><div class="preloader-bar-fill" id="preloaderFill"></div></div>
 </div>
+
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+<header class="site-header">
+  <nav class="nav container">
+    <a href="index.html" class="brand">
+      <img src="assets/logo-transparent.png" alt="" class="brand-mark">
+      <span class="brand-name">HASAN EMRE GÜÇ</span>
+    </a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Menüyü aç/kapat" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <ul class="nav-links" id="navLinks">
+      <li class="nav-indicator" id="navIndicator" aria-hidden="true"></li>
+      <li><a href="projeler.html">PROJELER</a></li>
+      <li><a href="hakkimda.html">HAKKIMDA</a></li>
+      <li><a href="iletisim.html">İLETİŞİM</a></li>
+      <li><a href="blog.html">BLOG</a></li>
+    </ul>
+  </nav>
+</header>
 
 <main>
   <div class="scrolly-container" id="scrollyContainer">
@@ -26,34 +49,40 @@
 
       <div class="scrolly-text scrolly-text--center" data-range="0,0.15">
         <div class="scrolly-text-inner">
-          <h2>HEG Apps</h2>
-          <p>Precision engineering in every layer.</p>
+          <h2>Hasan Emre Güç</h2>
+          <p>Her katmanda hassas mühendislik.</p>
         </div>
       </div>
 
       <div class="scrolly-text scrolly-text--left" data-range="0.30,0.50">
         <div class="scrolly-text-inner">
-          <h2>Architectural Clarity.</h2>
-          <p>Engineered from the inside out.</p>
+          <h2>Mimari Netlik.</h2>
+          <p>İçeriden dışarıya, mühendislik disipliniyle kuruldu.</p>
         </div>
       </div>
 
       <div class="scrolly-text scrolly-text--right" data-range="0.65,0.80">
         <div class="scrolly-text-inner">
-          <h2>Seamless Integration.</h2>
-          <p>Performance meets uncompromising design.</p>
+          <h2>Kusursuz Entegrasyon.</h2>
+          <p>Performans, ödün vermeyen tasarımla buluşuyor.</p>
         </div>
       </div>
 
       <div class="scrolly-text scrolly-text--center" data-range="0.90,1.0">
         <div class="scrolly-text-inner">
-          <h2>Experience The Next Standard.</h2>
-          <a href="mailto:emreguchasan@gmail.com" class="scrolly-cta">Get in touch</a>
+          <h2>Fikirden çalışan ürüne.</h2>
+          <a href="projeler.html" class="scrolly-cta">Projelerimi Gör</a>
         </div>
       </div>
     </div>
   </div>
 </main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; <span id="year"></span> Hasan Emre Güç. Tüm hakları saklıdır.</p>
+  </div>
+</footer>
 
 <script src="js/script.js"></script>
 </body>
