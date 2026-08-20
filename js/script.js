@@ -1,199 +1,131 @@
-// Footer year
-document.getElementById('year').textContent = new Date().getFullYear();
+// ---------------------------------------------------------------------------
+// HEG Apps — scroll-linked 36-frame explode/reassemble sequence.
+// Pure vanilla HTML5 Canvas + rAF, no dependencies.
+// ---------------------------------------------------------------------------
 
-// Mobile nav toggle
-const navToggle = document.getElementById('navToggle');
-const navLinks = document.getElementById('navLinks');
+const TOTAL_FRAMES = 36;
+const FRAME_PATH = (i) => `assets/ezgif-frame-${String(i).padStart(3, '0')}.jpg`;
 
-navToggle.addEventListener('click', () => {
-  const isOpen = navLinks.classList.toggle('open');
-  navToggle.setAttribute('aria-expanded', String(isOpen));
-});
-
-navLinks.querySelectorAll('a').forEach((link) => {
-  link.addEventListener('click', () => {
-    navLinks.classList.remove('open');
-    navToggle.setAttribute('aria-expanded', 'false');
-  });
-});
-
-// Active nav link on scroll + sliding indicator
-const sections = document.querySelectorAll('main section[id]');
-const navAnchors = document.querySelectorAll('.nav-links a');
-const navIndicator = document.getElementById('navIndicator');
-const navLinksList = document.getElementById('navLinks');
-
-const moveIndicatorTo = (link) => {
-  if (!link || !navIndicator || !navLinksList) return;
-  const listRect = navLinksList.getBoundingClientRect();
-  const linkRect = link.getBoundingClientRect();
-  navIndicator.style.width = `${linkRect.width}px`;
-  navIndicator.style.transform = `translateX(${linkRect.left - listRect.left}px)`;
-  navIndicator.style.opacity = '1';
-};
-
-const setActive = (id) => {
-  navAnchors.forEach((a) => {
-    const isActive = a.getAttribute('href') === `#${id}`;
-    a.classList.toggle('active', isActive);
-    if (isActive) moveIndicatorTo(a);
-  });
-};
-
-const sectionObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        setActive(entry.target.id);
-      }
-    });
-  },
-  { rootMargin: '-40% 0px -55% 0px', threshold: 0 }
-);
-
-sections.forEach((section) => sectionObserver.observe(section));
-
-// Position indicator correctly once fonts/layout settle, and on resize
-window.addEventListener('load', () => {
-  const activeLink = document.querySelector('.nav-links a.active');
-  moveIndicatorTo(activeLink);
-});
-window.addEventListener('resize', () => {
-  const activeLink = document.querySelector('.nav-links a.active');
-  moveIndicatorTo(activeLink);
-});
-
-// Scroll reveal animations
-const revealTargets = document.querySelectorAll('.reveal, .reveal-stagger');
-const revealObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in-view');
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.15 }
-);
-revealTargets.forEach((el) => revealObserver.observe(el));
-
-// ---- Premium interaction layer ----
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-
-// Preloader: reveal hero after a brief beat. Script runs at end of body (DOM
-// already parsed), so this doesn't need to wait on readyState/load — and a
-// CSS animation (see .preloader) force-hides it too as a hard safety net.
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const scrollyContainer = document.getElementById('scrollyContainer');
 const preloader = document.getElementById('preloader');
-const MIN_PRELOAD_MS = prefersReducedMotion ? 0 : 500;
-let revealed = false;
+const preloaderCount = document.getElementById('preloaderCount');
+const preloaderFill = document.getElementById('preloaderFill');
+const textSections = Array.from(document.querySelectorAll('.scrolly-text'));
 
-const revealPage = () => {
-  if (revealed) return;
-  revealed = true;
+const images = new Array(TOTAL_FRAMES);
+let loadedCount = 0;
+let currentFrame = -1; // last frame actually drawn
+let targetFrame = 0;
+let ready = false;
+
+// ---- Preload all 36 frames into memory, tracking real progress ----
+function preloadFrames() {
+  return new Promise((resolve) => {
+    for (let i = 1; i <= TOTAL_FRAMES; i++) {
+      const img = new Image();
+      img.onload = img.onerror = () => {
+        loadedCount++;
+        const pct = Math.round((loadedCount / TOTAL_FRAMES) * 100);
+        if (preloaderCount) preloaderCount.textContent = `${pct}%`;
+        if (preloaderFill) preloaderFill.style.width = `${pct}%`;
+        if (loadedCount === TOTAL_FRAMES) resolve();
+      };
+      img.src = FRAME_PATH(i);
+      images[i - 1] = img;
+    }
+  });
+}
+
+// ---- Retina-aware canvas sizing ----
+function resizeCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  canvas.width = Math.round(w * dpr);
+  canvas.height = Math.round(h * dpr);
+  canvas.style.width = `${w}px`;
+  canvas.style.height = `${h}px`;
+  if (ready) drawFrame(currentFrame === -1 ? 0 : currentFrame, true);
+}
+
+// ---- Cover-fit draw: fills the canvas edge-to-edge, cropping overflow,
+//      so there is never a background seam to hide (see css note on why
+//      this replaces the originally-briefed contain-fit + flat-bg match). ----
+function drawFrame(index, force) {
+  if (!force && index === currentFrame) return;
+  const img = images[index];
+  if (!img || !img.complete || img.naturalWidth === 0) return;
+
+  const cw = canvas.width;
+  const ch = canvas.height;
+  const iw = img.naturalWidth;
+  const ih = img.naturalHeight;
+  const scale = Math.max(cw / iw, ch / ih);
+  const dw = iw * scale;
+  const dh = ih * scale;
+  const dx = (cw - dw) / 2;
+  const dy = (ch - dh) / 2;
+
+  ctx.clearRect(0, 0, cw, ch);
+  ctx.drawImage(img, dx, dy, dw, dh);
+  currentFrame = index;
+}
+
+// ---- Scroll → progress (0..1) → frame index + text overlay visibility ----
+function getScrollProgress() {
+  const rect = scrollyContainer.getBoundingClientRect();
+  const total = scrollyContainer.offsetHeight - window.innerHeight;
+  if (total <= 0) return 0;
+  const scrolled = -rect.top;
+  return Math.min(1, Math.max(0, scrolled / total));
+}
+
+function updateTextSections(progress) {
+  textSections.forEach((el) => {
+    const [start, end] = el.dataset.range.split(',').map(Number);
+    const visible = progress >= start && progress <= end;
+    el.classList.toggle('is-visible', visible);
+  });
+}
+
+let ticking = false;
+function onScroll() {
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(() => {
+    const progress = getScrollProgress();
+    targetFrame = Math.round(progress * (TOTAL_FRAMES - 1));
+    updateTextSections(progress);
+    ticking = false;
+  });
+}
+
+// ---- Render loop: only redraws when the target frame actually changes,
+//      so idle scroll costs nothing while active scroll stays buttery. ----
+function renderLoop() {
+  if (targetFrame !== currentFrame) drawFrame(targetFrame);
+  requestAnimationFrame(renderLoop);
+}
+
+// ---- Boot ----
+async function init() {
+  document.body.classList.add('is-loading');
+  resizeCanvas();
+
+  await preloadFrames();
+  ready = true;
+
+  drawFrame(0, true);
+  updateTextSections(0);
+
+  document.body.classList.remove('is-loading');
   if (preloader) preloader.classList.add('is-hidden');
-  document.body.classList.add('ready');
-};
 
-setTimeout(revealPage, MIN_PRELOAD_MS);
-
-// Scroll progress bar
-const scrollProgress = document.getElementById('scrollProgress');
-const updateScrollProgress = () => {
-  if (!scrollProgress) return;
-  const scrollTop = window.scrollY || document.documentElement.scrollTop;
-  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  const ratio = docHeight > 0 ? Math.min(1, scrollTop / docHeight) : 0;
-  scrollProgress.style.transform = `scaleX(${ratio})`;
-};
-let progressTicking = false;
-window.addEventListener('scroll', () => {
-  if (!progressTicking) {
-    requestAnimationFrame(() => {
-      updateScrollProgress();
-      progressTicking = false;
-    });
-    progressTicking = true;
-  }
-});
-updateScrollProgress();
-
-// Custom cursor (desktop with a real mouse only)
-if (hasFinePointer && !prefersReducedMotion) {
-  document.documentElement.classList.add('has-cursor');
-
-  const cursorDot = document.getElementById('cursorDot');
-  const cursorRing = document.getElementById('cursorRing');
-  let mouseX = 0, mouseY = 0;
-  let ringX = 0, ringY = 0;
-
-  window.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    document.documentElement.classList.add('cursor-active');
-    if (cursorDot) {
-      cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
-    }
-  });
-  window.addEventListener('mouseleave', () => {
-    document.documentElement.classList.remove('cursor-active');
-  });
-
-  const animateRing = () => {
-    ringX += (mouseX - ringX) * 0.18;
-    ringY += (mouseY - ringY) * 0.18;
-    if (cursorRing) {
-      cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
-    }
-    requestAnimationFrame(animateRing);
-  };
-  requestAnimationFrame(animateRing);
-
-  const hoverables = document.querySelectorAll('a, button, .project-card, .stack-tags span');
-  hoverables.forEach((el) => {
-    el.addEventListener('mouseenter', () => cursorRing && cursorRing.classList.add('cursor-hover'));
-    el.addEventListener('mouseleave', () => cursorRing && cursorRing.classList.remove('cursor-hover'));
-  });
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', resizeCanvas);
+  requestAnimationFrame(renderLoop);
 }
 
-// Magnetic buttons
-if (hasFinePointer && !prefersReducedMotion) {
-  document.querySelectorAll('.magnetic').forEach((btn) => {
-    const strength = 0.35;
-    const maxOffset = 12;
-
-    btn.addEventListener('mousemove', (e) => {
-      const rect = btn.getBoundingClientRect();
-      const relX = e.clientX - (rect.left + rect.width / 2);
-      const relY = e.clientY - (rect.top + rect.height / 2);
-      const offsetX = Math.max(-maxOffset, Math.min(maxOffset, relX * strength));
-      const offsetY = Math.max(-maxOffset, Math.min(maxOffset, relY * strength));
-      btn.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-    });
-    btn.addEventListener('mouseleave', () => {
-      btn.style.transform = '';
-    });
-  });
-}
-
-// Card tilt + spotlight
-if (hasFinePointer && !prefersReducedMotion) {
-  document.querySelectorAll('.project-card.tilt').forEach((card) => {
-    const maxTilt = 6;
-
-    card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      const px = (e.clientX - rect.left) / rect.width;
-      const py = (e.clientY - rect.top) / rect.height;
-      const rotateY = (px - 0.5) * maxTilt * 2;
-      const rotateX = (0.5 - py) * maxTilt * 2;
-      card.style.transform = `translateY(-6px) perspective(700px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-      card.style.setProperty('--mx', `${px * 100}%`);
-      card.style.setProperty('--my', `${py * 100}%`);
-    });
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = '';
-    });
-  });
-}
+init();
