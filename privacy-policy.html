@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yakorra — Gizlilik Politikası</title>
+<meta name="description" content="Yakorra rüya günlüğü uygulamasının gizlilik politikası: toplanan veriler, üçüncü taraf işlemciler ve kullanıcı hakları.">
+<link rel="icon" type="image/png" href="assets/logo-transparent.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=2">
+<style>
+  .legal-header {
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-alt);
+  }
+  .legal-header .container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .legal-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .legal-brand img { width: 28px; height: 28px; }
+  .legal-brand span {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .legal-back {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .legal-back:hover { color: var(--text); }
+
+  .legal-main {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+  }
+  .legal-eyebrow {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0 0 12px;
+  }
+  .legal-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(28px, 5vw, 40px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0 0 14px;
+  }
+  .legal-updated {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin: 0 0 40px;
+  }
+  .legal-lead {
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.75;
+    margin: 0 0 40px;
+    padding: 18px 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .legal-section { margin: 0 0 40px; }
+  .legal-section h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    margin: 0 0 14px;
+    padding-top: 6px;
+  }
+  .legal-section h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 22px 0 8px;
+    color: var(--text);
+  }
+  .legal-section p, .legal-section li {
+    color: var(--text-dim);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  .legal-section ul { margin: 0 0 14px; padding-left: 20px; }
+  .legal-section li { margin-bottom: 8px; }
+  .legal-section strong { color: var(--text); font-weight: 600; }
+  .legal-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 20px;
+    font-size: 14px;
+  }
+  .legal-table th, .legal-table td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    vertical-align: top;
+  }
+  .legal-table th {
+    color: var(--text);
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+  }
+  .legal-table td strong { color: var(--text); }
+  .legal-contact {
+    padding: 22px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .legal-contact a {
+    color: var(--cyan);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .legal-contact a:hover { text-decoration: underline; }
+  @media (max-width: 600px) {
+    .legal-table { display: block; overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+
+<header class="legal-header">
+  <div class="container">
+    <a href="index.html" class="legal-brand">
+      <img src="assets/logo-transparent.png" alt="">
+      <span>YAKORRA</span>
+    </a>
+    <a href="index.html" class="legal-back">← Anasayfaya dön</a>
+  </div>
+</header>
+
+<main class="legal-main">
+  <p class="legal-eyebrow">Yasal</p>
+  <h1 class="legal-title">Gizlilik Politikası</h1>
+  <p class="legal-updated">Son güncelleme: 20 Ağustos 2026</p>
+
+  <p class="legal-lead">
+    Yakorra, rüyalarını sesli veya yazılı olarak kaydedip yapay zekâ ile yorumlayan bir rüya günlüğü
+    uygulamasıdır. Bu sayfa, uygulamayı kullanırken hangi verilerin toplandığını, bu verilerin nerede
+    saklandığını, hangi üçüncü taraflarla ne amaçla paylaşıldığını ve verilerin üzerindeki haklarını
+    açıklar.
+  </p>
+
+  <section class="legal-section">
+    <h2>1. Topladığımız veriler</h2>
+
+    <h3>Kimlik bilgileri</h3>
+    <p>
+      Google veya Apple hesabınla giriş yaptığında, Firebase Authentication üzerinden hesabının
+      benzersiz kimliğini (uid), e-posta adresini, adını ve varsa profil fotoğrafı bağlantısını
+      alırız. Bu bilgi yalnızca hesabını tanımlamak ve verilerini cihazlar arasında senkronize etmek
+      için kullanılır.
+    </p>
+
+    <h3>Rüya içeriği</h3>
+    <p>
+      Kaydettiğin her rüya için şu içerikler, hesabına özel olarak (varsayılan olarak yalnızca sen
+      görebilirsin) Firebase Firestore ve Firebase Storage'da saklanır:
+    </p>
+    <ul>
+      <li>Rüyanın yazıya döktüğün / anlattığın metni ve varsa düzenlediğin hâli,</li>
+      <li>Yapay zekânın ürettiği başlık, psikolojik/geleneksel/rehberlik yorumları,</li>
+      <li>Rüyan için üretilen yapay zekâ görseli.</li>
+    </ul>
+
+    <h3>Ses kaydı</h3>
+    <p>
+      Rüyanı sesli anlattığında, ses kaydı önce cihazında geçici bir dosya olarak tutulur, yalnızca
+      yazıya çevirme (transkripsiyon) işlemi için sunucumuza gönderilir ve işlem tamamlanır tamamlanmaz
+      hem cihazından hem sunucudan silinir. Ses kaydı hiçbir noktada kalıcı olarak saklanmaz; yalnızca
+      yazıya döktüğün metin kalıcı içerik olarak kaydedilir.
+    </p>
+
+    <h3>Düş Küresi'ne paylaşım (isteğe bağlı)</h3>
+    <p>
+      Bir rüyanı "Düş Küresi" herkese açık akışında paylaşmayı seçersen, o rüyanın başlığı, metni,
+      görseli, yapay zekâ yorumları ve seçtiğin anonim rumuz herkese açık hâle gelir. Rüyanın orijinal
+      (düzenlenmemiş) sesli anlatım metni bu paylaşıma dahil edilmez ve hiçbir zaman herkese açık
+      gösterilmez. Paylaşımı istediğin an geri çekebilirsin; bu durumda herkese açık kopya ve görseli
+      kalıcı olarak silinir. Düş Küresi'nde bir paylaşımı veya yorumu şikâyet edebilir, bir kullanıcıyı
+      engelleyebilirsin — şikâyetler incelenmek üzere bize iletilir.
+    </p>
+
+    <h3>Bildirim tercihleri</h3>
+    <p>
+      Günlük "Rüya Alarmı" hatırlatıcısı tamamen cihazında, yerel olarak zamanlanır; bu tercih hiçbir
+      sunucuya gönderilmez.
+    </p>
+  </section>
+
+  <section class="legal-section">
+    <h2>2. Verilerin gönderildiği üçüncü taraflar</h2>
+    <p>
+      Rüyanı işlerken (yazıya çevirme, yorumlama, görsel üretimi) içeriğin, kendi sunucumuz üzerinden
+      aşağıdaki yapay zekâ servis sağlayıcılarına iletilir. Cihazın bu servislere doğrudan bağlanmaz —
+      tüm istekler bizim kendi backend sunucumuzdan geçer:
+    </p>
+    <table class="legal-table">
+      <tr><th>Sağlayıcı</th><th>Amaç</th><th>Gönderilen veri</th></tr>
+      <tr><td><strong>Groq</strong></td><td>Sesin yazıya çevrilmesi (konuşma tanıma)</td><td>Ses kaydı</td></tr>
+      <tr><td><strong>Google Gemini</strong> / Groq (yedek)</td><td>Rüya yorumlama, başlık ve görsel açıklaması üretimi</td><td>Rüya metni</td></tr>
+      <tr><td><strong>Google Imagen 3</strong>, Cloudflare Workers AI, Pollinations.ai (sırayla yedek)</td><td>Rüya görselinin üretilmesi</td><td>Yapay zekânın ürettiği görsel açıklaması</td></tr>
+    </table>
+    <p>
+      Ayrıca hesap ve içerik verilerin Google Firebase altyapısında (Authentication, Firestore, Storage)
+      barındırılır; backend sunucumuz Render üzerinde çalışır.
+    </p>
+  </section>
+
+  <section class="legal-section">
+    <h2>3. Reklam, analitik ve takip</h2>
+    <p>
+      Yakorra hiçbir reklam SDK'sı, kullanım analitiği veya çökme raporlama aracı (analytics/crash
+      reporting) ve hiçbir üçüncü taraf takip (tracking) sistemi içermez. Uygulama içi davranışını
+      izleyen veya reklam kimliği toplayan hiçbir bileşen bulunmaz.
+    </p>
+  </section>
+
+  <section class="legal-section">
+    <h2>4. Verilerinin saklanması ve silinmesi</h2>
+    <p>
+      Rüyaların, hesabın aktif olduğu sürece saklanır. Uygulama içinden istediğin an tek tek rüyalarını
+      silebilir, ya da Ayarlar → "Hesabımı Sil" yoluyla hesabını ve buna bağlı tüm verilerini kalıcı
+      olarak silebilirsin. Hesap silme işlemi şunları kapsar: tüm özel rüyaların (metin, görsel, yorum),
+      Düş Küresi'nde paylaşmış olabileceğin gönderilerin, profil/rumuz bilgilerinin ve hesabının kendisinin
+      silinmesi. Bu işlem geri alınamaz.
+    </p>
+  </section>
+
+  <section class="legal-section">
+    <h2>5. Güvenlik</h2>
+    <p>
+      Verilerin, Firebase'in güvenlik kuralları ile korunur: her kullanıcı yalnızca kendi rüyalarına
+      erişebilir, herkese açık Düş Küresi paylaşımları ise yalnızca kullanıcının bilerek paylaşmayı
+      seçtiği içeriktir. Üçüncü taraf API anahtarları yalnızca sunucu tarafında tutulur, hiçbir zaman
+      mobil uygulamanın içine gömülmez.
+    </p>
+  </section>
+
+  <section class="legal-section">
+    <h2>6. Çocukların gizliliği</h2>
+    <p>
+      Yakorra genel bir kitleye yöneliktir ve bilerek 13 yaşın altındaki çocuklardan veri toplamaz.
+      Bir çocuğun bilgisi olmadan bize veri sağladığını düşünüyorsan, aşağıdaki iletişim adresinden
+      bize ulaşman durumunda ilgili veriyi sileriz.
+    </p>
+  </section>
+
+  <section class="legal-section">
+    <h2>7. Haklarınız</h2>
+    <p>
+      Verilerine erişme, düzeltme, taşınabilirliğini isteme ve silinmesini talep etme hakkına sahipsin.
+      Bu hakların büyük kısmını doğrudan uygulama içinden kullanabilirsin (rüya düzenleme/silme, Düş
+      Küresi paylaşımını geri çekme, hesap silme); ek bir talebin olursa aşağıdaki adresten bize
+      ulaşabilirsin.
+    </p>
+  </section>
+
+  <section class="legal-section">
+    <h2>8. Bu politikadaki değişiklikler</h2>
+    <p>
+      Bu politikayı zaman zaman güncelleyebiliriz. Önemli değişikliklerde bu sayfadaki "son güncelleme"
+      tarihini güncelleriz; uygulamayı kullanmaya devam etmen, güncel politikayı kabul ettiğin anlamına
+      gelir.
+    </p>
+  </section>
+
+  <section class="legal-section legal-contact">
+    <h2 style="margin-top:0;">İletişim</h2>
+    <p style="margin-bottom:0;">
+      Gizlilik ile ilgili sorularını veya taleplerini
+      <a href="mailto:emreguchasan@gmail.com">emreguchasan@gmail.com</a>
+      adresine yazarak bize iletebilirsin.
+    </p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; 2026 Hasan Emre Güç. Tüm hakları saklıdır.</p>
+  </div>
+</footer>
+
+</body>
+</html>
