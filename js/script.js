@@ -4,6 +4,13 @@
 // Pure vanilla HTML5 Canvas + rAF, no dependencies.
 // ---------------------------------------------------------------------------
 
+// Every page load starts at the top instead of the browser restoring the
+// scroll position from before a refresh — otherwise the hero canvas (which
+// always boots showing frame 1) ends up out of sync with wherever the
+// restored scroll position says it should be.
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
 const TOTAL_FRAMES = 60;
 const FRAME_PATH = (i) => `assets/hero-frame-${String(i).padStart(3, '0')}.webp`;
 
