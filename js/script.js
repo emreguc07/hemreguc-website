@@ -53,6 +53,12 @@ if (canvas) {
     });
   }
 
+  // Offscreen layer the sharp frame is drawn onto before its left/right
+  // edges get feathered (see featherSharpLayer) — kept sized to match the
+  // main canvas so the two composite pixel-for-pixel.
+  const sharpLayer = document.createElement('canvas');
+  const sharpLayerCtx = sharpLayer.getContext('2d');
+
   // ---- Retina-aware canvas sizing ----
   function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
@@ -62,21 +68,25 @@ if (canvas) {
     canvas.height = Math.round(h * dpr);
     canvas.style.width = `${w}px`;
     canvas.style.height = `${h}px`;
+    sharpLayer.width = canvas.width;
+    sharpLayer.height = canvas.height;
     if (ready) drawFrame(displayFrame, true);
   }
 
-  // ---- Fit-height draw of a single image onto the canvas: the full frame
-  //      is always shown, top to bottom, at whatever width that implies.
-  //      On a window wider than the footage's 16:9, this leaves a gap at
-  //      the sides instead of cropping the phone or its reflection — but
-  //      that gap shows the canvas's own (transparent, cleared) background,
-  //      which already matches the footage's dark backdrop almost exactly,
-  //      so it reads as a wider stage rather than a visible bar.
+  // ---- Fit-height draw of a single image onto the given context: the
+  //      full frame is always shown, top to bottom, at whatever width
+  //      that implies. On a window wider than the footage's 16:9, this
+  //      leaves a gap at the sides instead of cropping the phone or its
+  //      reflection — but that gap shows the ambient backdrop underneath
+  //      (see drawAmbientBackdrop) with the sharp frame's own edges
+  //      feathered into it (see featherSharpLayer), rather than a hard-
+  //      edged cut. Returns the drawn image's horizontal bounds so the
+  //      caller can feather relative to them.
   //      (The fixed nav bar floating above this is handled in CSS — see
   //      .site-header--transparent — rather than by skewing this crop,
   //      since on wide viewports clearing it that way needed an amount of
   //      zoom that badly cropped the sides instead.) ----
-  function drawImageCover(img) {
+  function drawImageCoverTo(targetCtx, img) {
     const cw = canvas.width;
     const ch = canvas.height;
     const iw = img.naturalWidth;
@@ -85,8 +95,30 @@ if (canvas) {
     const dw = iw * scale;
     const dh = ch;
     const dx = (cw - dw) / 2;
-    const dy = 0;
-    ctx.drawImage(img, dx, dy, dw, dh);
+    targetCtx.drawImage(img, dx, 0, dw, dh);
+    return { dx, dw };
+  }
+
+  // ---- Feathers the sharp layer's left/right edges to transparent over
+  //      FEATHER_PX, so where a gap exists (dx > 0) the crisp frame melts
+  //      into the blurred backdrop instead of stopping at a hard line. No-
+  //      op when the frame already spans the full canvas width. ----
+  const FEATHER_PX = 140;
+  function featherSharpLayer(dx, dw) {
+    if (dx < 1) return;
+    const w = sharpLayer.width;
+    const h = sharpLayer.height;
+    const feather = Math.min(FEATHER_PX, dw / 2);
+    sharpLayerCtx.save();
+    sharpLayerCtx.globalCompositeOperation = 'destination-in';
+    const grad = sharpLayerCtx.createLinearGradient(dx, 0, dx + dw, 0);
+    grad.addColorStop(0, 'rgba(0,0,0,0)');
+    grad.addColorStop(feather / dw, 'rgba(0,0,0,1)');
+    grad.addColorStop(1 - feather / dw, 'rgba(0,0,0,1)');
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    sharpLayerCtx.fillStyle = grad;
+    sharpLayerCtx.fillRect(0, 0, w, h);
+    sharpLayerCtx.restore();
   }
 
   // ---- Ambient backdrop: a downscaled, blurred copy of the same frame
@@ -141,14 +173,20 @@ if (canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.globalAlpha = 1;
     drawAmbientBackdrop(lowImg);
-    drawImageCover(lowImg);
+
+    sharpLayerCtx.clearRect(0, 0, sharpLayer.width, sharpLayer.height);
+    sharpLayerCtx.globalAlpha = 1;
+    const { dx, dw } = drawImageCoverTo(sharpLayerCtx, lowImg);
 
     const highImg = images[highIdx];
     if (highIdx !== lowIdx && t > 0.001 && highImg && highImg.complete && highImg.naturalWidth !== 0) {
-      ctx.globalAlpha = t;
-      drawImageCover(highImg);
-      ctx.globalAlpha = 1;
+      sharpLayerCtx.globalAlpha = t;
+      drawImageCoverTo(sharpLayerCtx, highImg);
+      sharpLayerCtx.globalAlpha = 1;
     }
+
+    featherSharpLayer(dx, dw);
+    ctx.drawImage(sharpLayer, 0, 0);
 
     currentFrame = clamped;
   }
