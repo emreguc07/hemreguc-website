@@ -65,8 +65,13 @@ if (canvas) {
     if (ready) drawFrame(displayFrame, true);
   }
 
-  // ---- Cover-fit draw of a single image onto the canvas: fills edge-to-
-  //      edge, cropping overflow, so there is never a background seam.
+  // ---- Fit-height draw of a single image onto the canvas: the full frame
+  //      is always shown, top to bottom, at whatever width that implies.
+  //      On a window wider than the footage's 16:9, this leaves a gap at
+  //      the sides instead of cropping the phone or its reflection — but
+  //      that gap shows the canvas's own (transparent, cleared) background,
+  //      which already matches the footage's dark backdrop almost exactly,
+  //      so it reads as a wider stage rather than a visible bar.
   //      (The fixed nav bar floating above this is handled in CSS — see
   //      .site-header--transparent — rather than by skewing this crop,
   //      since on wide viewports clearing it that way needed an amount of
@@ -76,17 +81,11 @@ if (canvas) {
     const ch = canvas.height;
     const iw = img.naturalWidth;
     const ih = img.naturalHeight;
-    const scale = Math.max(cw / iw, ch / ih);
+    const scale = ch / ih;
     const dw = iw * scale;
-    const dh = ih * scale;
+    const dh = ch;
     const dx = (cw - dw) / 2;
-    // On a wide-but-short window (much wider than the footage's 16:9),
-    // filling the width means cropping some height. Bottom-align instead
-    // of centering: take that crop entirely off the top (empty backdrop
-    // above the subject, worst case eating slightly into the top of the
-    // phone on very wide windows) so the reflection floor underneath it
-    // is never touched.
-    const dy = ch - dh;
+    const dy = 0;
     ctx.drawImage(img, dx, dy, dw, dh);
   }
 
