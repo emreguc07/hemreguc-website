@@ -76,7 +76,18 @@ if (canvas) {
     const ch = canvas.height;
     const iw = img.naturalWidth;
     const ih = img.naturalHeight;
-    const scale = Math.max(cw / iw, ch / ih);
+
+    // On a wide-but-short window (much wider than the footage's 16:9),
+    // pure cover-fit is width-bound and over-scales past what's needed to
+    // fill the height — cropping far more off the top/bottom than the
+    // footage was framed for, so the subject looks zoomed in too close
+    // and the reflection floor gets cut off. Cap how far past "fit the
+    // height" that's allowed to go; any gap this leaves at the sides just
+    // shows the canvas's own background, which already matches the
+    // footage's dark backdrop, so it reads as a wider stage, not a bar.
+    const scaleFitHeight = ch / ih;
+    const scale = Math.min(Math.max(cw / iw, ch / ih), scaleFitHeight * 1.02);
+
     const dw = iw * scale;
     const dh = ih * scale;
     const dx = (cw - dw) / 2;
