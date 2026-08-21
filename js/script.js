@@ -89,28 +89,34 @@ if (canvas) {
     ctx.drawImage(img, dx, dy, dw, dh);
   }
 
-  // ---- Ambient backdrop: a tiny, heavily-downscaled copy of the same
-  //      frame stretched to fill the whole canvas, so the side gaps left
-  //      by the sharp fit-height frame above pick up a soft, blurred glow
-  //      from the footage instead of sitting flat and empty. Sampling down
-  //      to a handful of pixels and letting the browser's own upscaling
-  //      blur it back up is essentially free — far cheaper than a real
-  //      blur filter at full canvas size, every frame. ----
+  // ---- Ambient backdrop: a downscaled, blurred copy of the same frame
+  //      stretched to fill the whole canvas, so the side gaps left by the
+  //      sharp fit-height frame above pick up a soft glow from the footage
+  //      instead of sitting flat and empty. The side gaps are typically
+  //      only 100-150px wide, so the sample needs enough real resolution
+  //      across that span to read as a gradient rather than flat bands —
+  //      too coarse a downscale (a handful of px) looked like solid
+  //      horizontal stripes once stretched. The blur itself is applied at
+  //      this small size, where it's cheap, rather than at full canvas
+  //      size every frame. ----
   const bgSample = document.createElement('canvas');
   const bgSampleCtx = bgSample.getContext('2d');
-  const BG_SAMPLE_W = 32;
-  const BG_SAMPLE_H = 18;
+  const BG_SAMPLE_W = 200;
+  const BG_SAMPLE_H = 113;
   bgSample.width = BG_SAMPLE_W;
   bgSample.height = BG_SAMPLE_H;
 
   function drawAmbientBackdrop(img) {
     const iw = img.naturalWidth;
     const ih = img.naturalHeight;
+
     const sScale = Math.max(BG_SAMPLE_W / iw, BG_SAMPLE_H / ih);
     const sw = iw * sScale;
     const sh = ih * sScale;
     bgSampleCtx.clearRect(0, 0, BG_SAMPLE_W, BG_SAMPLE_H);
+    bgSampleCtx.filter = 'blur(6px)';
     bgSampleCtx.drawImage(img, (BG_SAMPLE_W - sw) / 2, (BG_SAMPLE_H - sh) / 2, sw, sh);
+    bgSampleCtx.filter = 'none';
 
     ctx.save();
     ctx.globalAlpha = 0.5;
