@@ -202,6 +202,13 @@ a { text-decoration: none; }
   padding: 0 32px;
 }
 
+/* The nav reads better a bit wider than the site's normal reading-width
+   container — this pushes the links closer to the edge on large screens
+   without affecting the narrower content sections below. */
+.nav.container {
+  max-width: 1440px;
+}
+
 /* Nav — fixed so it floats over the canvas during the scroll sequence
    too, not just once the content sections begin. */
 .site-header {
