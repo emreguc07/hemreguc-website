@@ -71,27 +71,31 @@ if (canvas) {
   //      .site-header--transparent — rather than by skewing this crop,
   //      since on wide viewports clearing it that way needed an amount of
   //      zoom that badly cropped the sides instead.) ----
+  // How much empty headroom sits above the subject in the source footage
+  // (px, at the 1280x720 source resolution) across every frame — safe to
+  // crop away first since it's just backdrop, never the phone itself.
+  const SOURCE_TOP_MARGIN = 30;
+
   function drawImageCover(img) {
     const cw = canvas.width;
     const ch = canvas.height;
     const iw = img.naturalWidth;
     const ih = img.naturalHeight;
 
-    // On a wide-but-short window (much wider than the footage's 16:9),
-    // pure cover-fit is width-bound and over-scales past what's needed to
-    // fill the height — cropping far more off the top/bottom than the
-    // footage was framed for, so the subject looks zoomed in too close
-    // and the reflection floor gets cut off. Cap how far past "fit the
-    // height" that's allowed to go; any gap this leaves at the sides just
-    // shows the canvas's own background, which already matches the
-    // footage's dark backdrop, so it reads as a wider stage, not a bar.
-    const scaleFitHeight = ch / ih;
-    const scale = Math.min(Math.max(cw / iw, ch / ih), scaleFitHeight * 1.02);
-
+    // Always fill edge-to-edge — no pillarboxing. On a wide-but-short
+    // window (much wider than the footage's 16:9), that means more
+    // vertical overflow to crop than a centered crop would ideally take.
+    // Take that crop off the top first (empty backdrop, safe to lose)
+    // before touching the bottom (the reflection floor), instead of
+    // splitting it evenly — a centered crop was eating into the subject
+    // itself on very wide windows.
+    const scale = Math.max(cw / iw, ch / ih);
     const dw = iw * scale;
     const dh = ih * scale;
     const dx = (cw - dw) / 2;
-    const dy = (ch - dh) / 2;
+    const totalVerticalCrop = Math.max(0, dh - ch);
+    const topCrop = Math.min(totalVerticalCrop, SOURCE_TOP_MARGIN * scale);
+    const dy = -topCrop;
     ctx.drawImage(img, dx, dy, dw, dh);
   }
 
