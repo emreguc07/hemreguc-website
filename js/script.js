@@ -89,6 +89,35 @@ if (canvas) {
     ctx.drawImage(img, dx, dy, dw, dh);
   }
 
+  // ---- Ambient backdrop: a tiny, heavily-downscaled copy of the same
+  //      frame stretched to fill the whole canvas, so the side gaps left
+  //      by the sharp fit-height frame above pick up a soft, blurred glow
+  //      from the footage instead of sitting flat and empty. Sampling down
+  //      to a handful of pixels and letting the browser's own upscaling
+  //      blur it back up is essentially free — far cheaper than a real
+  //      blur filter at full canvas size, every frame. ----
+  const bgSample = document.createElement('canvas');
+  const bgSampleCtx = bgSample.getContext('2d');
+  const BG_SAMPLE_W = 32;
+  const BG_SAMPLE_H = 18;
+  bgSample.width = BG_SAMPLE_W;
+  bgSample.height = BG_SAMPLE_H;
+
+  function drawAmbientBackdrop(img) {
+    const iw = img.naturalWidth;
+    const ih = img.naturalHeight;
+    const sScale = Math.max(BG_SAMPLE_W / iw, BG_SAMPLE_H / ih);
+    const sw = iw * sScale;
+    const sh = ih * sScale;
+    bgSampleCtx.clearRect(0, 0, BG_SAMPLE_W, BG_SAMPLE_H);
+    bgSampleCtx.drawImage(img, (BG_SAMPLE_W - sw) / 2, (BG_SAMPLE_H - sh) / 2, sw, sh);
+
+    ctx.save();
+    ctx.globalAlpha = 0.5;
+    ctx.drawImage(bgSample, 0, 0, canvas.width, canvas.height);
+    ctx.restore();
+  }
+
   // ---- Fractional-frame draw: crossfades between the two nearest loaded
   //      frames so eased motion looks like smooth video instead of the
   //      sequence snapping between whole frames. ----
@@ -105,6 +134,7 @@ if (canvas) {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.globalAlpha = 1;
+    drawAmbientBackdrop(lowImg);
     drawImageCover(lowImg);
 
     const highImg = images[highIdx];
