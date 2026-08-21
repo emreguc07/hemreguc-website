@@ -1,11 +1,11 @@
 // ---------------------------------------------------------------------------
-// Scroll-linked 36-frame explode/reassemble hero (index.html only) + shared
+// Scroll-linked 60-frame explode/reassemble hero (index.html only) + shared
 // site chrome (nav, scroll-reveal, scroll progress — every page).
 // Pure vanilla HTML5 Canvas + rAF, no dependencies.
 // ---------------------------------------------------------------------------
 
-const TOTAL_FRAMES = 36;
-const FRAME_PATH = (i) => `assets/ezgif-frame-${String(i).padStart(3, '0')}.jpg`;
+const TOTAL_FRAMES = 60;
+const FRAME_PATH = (i) => `assets/hero-frame-${String(i).padStart(3, '0')}.webp`;
 
 const canvas = document.getElementById('canvas');
 
@@ -19,11 +19,16 @@ if (canvas) {
 
   const images = new Array(TOTAL_FRAMES);
   let loadedCount = 0;
-  let currentFrame = -1; // last frame actually drawn
-  let targetFrame = 0;
+  let currentFrame = -1;   // last (fractional) frame actually drawn
+  let targetFrame = 0;     // where scroll wants us to be (fractional, unrounded)
+  let displayFrame = 0;    // eased position that chases targetFrame each tick
   let ready = false;
 
-  // ---- Preload all 36 frames into memory, tracking real progress ----
+  // How quickly the displayed frame catches up to the scroll target each
+  // tick. Lower = smoother/slower trailing motion, higher = snappier.
+  const EASE = 0.12;
+
+  // ---- Preload all frames into memory, tracking real progress ----
   function preloadFrames() {
     return new Promise((resolve) => {
       for (let i = 1; i <= TOTAL_FRAMES; i++) {
@@ -50,16 +55,16 @@ if (canvas) {
     canvas.height = Math.round(h * dpr);
     canvas.style.width = `${w}px`;
     canvas.style.height = `${h}px`;
-    if (ready) drawFrame(currentFrame === -1 ? 0 : currentFrame, true);
+    if (ready) drawFrame(displayFrame, true);
   }
 
-  // ---- Cover-fit draw: fills the canvas edge-to-edge, cropping overflow,
-  //      so there is never a background seam to hide. ----
-  function drawFrame(index, force) {
-    if (!force && index === currentFrame) return;
-    const img = images[index];
-    if (!img || !img.complete || img.naturalWidth === 0) return;
-
+  // ---- Cover-fit draw of a single image onto the canvas: fills edge-to-
+  //      edge, cropping overflow, so there is never a background seam.
+  //      (The fixed nav bar floating above this is handled in CSS — see
+  //      .site-header--transparent — rather than by skewing this crop,
+  //      since on wide viewports clearing it that way needed an amount of
+  //      zoom that badly cropped the sides instead.) ----
+  function drawImageCover(img) {
     const cw = canvas.width;
     const ch = canvas.height;
     const iw = img.naturalWidth;
@@ -69,10 +74,35 @@ if (canvas) {
     const dh = ih * scale;
     const dx = (cw - dw) / 2;
     const dy = (ch - dh) / 2;
-
-    ctx.clearRect(0, 0, cw, ch);
     ctx.drawImage(img, dx, dy, dw, dh);
-    currentFrame = index;
+  }
+
+  // ---- Fractional-frame draw: crossfades between the two nearest loaded
+  //      frames so eased motion looks like smooth video instead of the
+  //      sequence snapping between whole frames. ----
+  function drawFrame(frameFloat, force) {
+    if (!force && Math.abs(frameFloat - currentFrame) < 0.001) return;
+
+    const clamped = Math.max(0, Math.min(TOTAL_FRAMES - 1, frameFloat));
+    const lowIdx = Math.floor(clamped);
+    const highIdx = Math.min(TOTAL_FRAMES - 1, Math.ceil(clamped));
+    const t = clamped - lowIdx;
+
+    const lowImg = images[lowIdx];
+    if (!lowImg || !lowImg.complete || lowImg.naturalWidth === 0) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 1;
+    drawImageCover(lowImg);
+
+    const highImg = images[highIdx];
+    if (highIdx !== lowIdx && t > 0.001 && highImg && highImg.complete && highImg.naturalWidth !== 0) {
+      ctx.globalAlpha = t;
+      drawImageCover(highImg);
+      ctx.globalAlpha = 1;
+    }
+
+    currentFrame = clamped;
   }
 
   // ---- Scroll → progress (0..1) → frame index + text overlay visibility ----
@@ -98,16 +128,25 @@ if (canvas) {
     ticking = true;
     requestAnimationFrame(() => {
       const progress = getScrollProgress();
-      targetFrame = Math.round(progress * (TOTAL_FRAMES - 1));
+      targetFrame = progress * (TOTAL_FRAMES - 1); // fractional — no rounding
       updateTextSections(progress);
       ticking = false;
     });
   }
 
-  // ---- Render loop: only redraws when the target frame actually changes,
-  //      so idle scroll costs nothing while active scroll stays buttery. ----
+  // ---- Render loop: eases displayFrame toward targetFrame every tick
+  //      (instead of snapping straight to it), so fast scrolls glide through
+  //      the sequence instead of jumping between frames. Settles to an exact
+  //      stop once close enough, so idle scroll still costs nothing. ----
   function renderLoop() {
-    if (targetFrame !== currentFrame) drawFrame(targetFrame);
+    const diff = targetFrame - displayFrame;
+    if (Math.abs(diff) > 0.01) {
+      displayFrame += diff * EASE;
+      drawFrame(displayFrame);
+    } else if (displayFrame !== targetFrame) {
+      displayFrame = targetFrame;
+      drawFrame(displayFrame, true);
+    }
     requestAnimationFrame(renderLoop);
   }
 
