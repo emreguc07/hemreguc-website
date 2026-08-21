@@ -71,31 +71,22 @@ if (canvas) {
   //      .site-header--transparent — rather than by skewing this crop,
   //      since on wide viewports clearing it that way needed an amount of
   //      zoom that badly cropped the sides instead.) ----
-  // How much empty headroom sits above the subject in the source footage
-  // (px, at the 1280x720 source resolution) across every frame — safe to
-  // crop away first since it's just backdrop, never the phone itself.
-  const SOURCE_TOP_MARGIN = 30;
-
   function drawImageCover(img) {
     const cw = canvas.width;
     const ch = canvas.height;
     const iw = img.naturalWidth;
     const ih = img.naturalHeight;
-
-    // Always fill edge-to-edge — no pillarboxing. On a wide-but-short
-    // window (much wider than the footage's 16:9), that means more
-    // vertical overflow to crop than a centered crop would ideally take.
-    // Take that crop off the top first (empty backdrop, safe to lose)
-    // before touching the bottom (the reflection floor), instead of
-    // splitting it evenly — a centered crop was eating into the subject
-    // itself on very wide windows.
     const scale = Math.max(cw / iw, ch / ih);
     const dw = iw * scale;
     const dh = ih * scale;
     const dx = (cw - dw) / 2;
-    const totalVerticalCrop = Math.max(0, dh - ch);
-    const topCrop = Math.min(totalVerticalCrop, SOURCE_TOP_MARGIN * scale);
-    const dy = -topCrop;
+    // On a wide-but-short window (much wider than the footage's 16:9),
+    // filling the width means cropping some height. Bottom-align instead
+    // of centering: take that crop entirely off the top (empty backdrop
+    // above the subject, worst case eating slightly into the top of the
+    // phone on very wide windows) so the reflection floor underneath it
+    // is never touched.
+    const dy = ch - dh;
     ctx.drawImage(img, dx, dy, dw, dh);
   }
 
