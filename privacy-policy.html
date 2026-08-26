@@ -158,7 +158,7 @@
 <main class="legal-main">
   <p class="legal-eyebrow">Yasal</p>
   <h1 class="legal-title">Gizlilik Politikası</h1>
-  <p class="legal-updated">Son güncelleme: 20 Ağustos 2026</p>
+  <p class="legal-updated">Son güncelleme: 26 Ağustos 2026</p>
 
   <p class="legal-lead">
     Yakorra, rüyalarını sesli veya yazılı olarak kaydedip yapay zekâ ile yorumlayan bir rüya günlüğü
@@ -226,6 +226,8 @@
       <tr><td><strong>Groq</strong></td><td>Sesin yazıya çevrilmesi (konuşma tanıma)</td><td>Ses kaydı</td></tr>
       <tr><td><strong>Google Gemini</strong> / Groq (yedek)</td><td>Rüya yorumlama, başlık ve görsel açıklaması üretimi</td><td>Rüya metni</td></tr>
       <tr><td><strong>Google Imagen 3</strong>, Cloudflare Workers AI, Pollinations.ai (sırayla yedek)</td><td>Rüya görselinin üretilmesi</td><td>Yapay zekânın ürettiği görsel açıklaması</td></tr>
+      <tr><td><strong>Google AdMob</strong></td><td>Premium olmayan kullanıcılara reklam gösterimi</td><td>Reklam kimliği (advertising ID) ve temel reklam etkileşim verileri</td></tr>
+      <tr><td><strong>RevenueCat</strong></td><td>Abonelik/satın alma doğrulama, premium ve düş jetonu hakkı yönetimi</td><td>Play Store satın alma bilgisi, hesap kimliğin (uid)</td></tr>
     </table>
     <p>
       Ayrıca hesap ve içerik verilerin Google Firebase altyapısında (Authentication, Firestore, Storage)
@@ -236,9 +238,15 @@
   <section class="legal-section">
     <h2>3. Reklam, analitik ve takip</h2>
     <p>
-      Yakorra hiçbir reklam SDK'sı, kullanım analitiği veya çökme raporlama aracı (analytics/crash
-      reporting) ve hiçbir üçüncü taraf takip (tracking) sistemi içermez. Uygulama içi davranışını
-      izleyen veya reklam kimliği toplayan hiçbir bileşen bulunmaz.
+      Yakorra, sınırsız kullanım hakkı olmayan (premium olmayan) kullanıcılara, bir rüya
+      görselleştirmesi tamamlandıktan sonra Google AdMob aracılığıyla tam ekran (interstitial) reklam
+      gösterir. Premium abonelere hiçbir reklam gösterilmez. AdMob, reklamları göstermek için cihazının
+      reklam kimliğini (advertising ID) ve reklamla ilgili temel etkileşim verilerini toplayabilir; bu
+      veriler Google'ın kendi gizlilik politikasına tabidir.
+    </p>
+    <p>
+      Bunun dışında Yakorra herhangi bir kullanım analitiği veya çökme raporlama aracı (analytics/crash
+      reporting) içermez — uygulama içi davranışını izleyen ayrı bir analitik sistemi bulunmaz.
     </p>
   </section>
 
