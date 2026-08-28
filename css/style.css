@@ -379,25 +379,33 @@ a { text-decoration: none; }
   isolation: isolate;
 }
 
-/* Kartın kenarında yavaşça dönen gradyan ışık çerçevesi */
+/* Kartın kenarındaki çerçeve sabit durur; sadece gradyanın açısı (--border-angle)
+   animasyonla dönüyor, yani ışık çerçevenin İÇİNDEN geçiyormuş gibi akıyor,
+   çerçevenin kendisi hiç kıpırdamıyor. */
+@property --border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
 .feature-project::before {
   content: '';
   position: absolute;
   inset: 0;
   padding: 1.5px;
   border-radius: inherit;
-  background: conic-gradient(from 0deg, var(--accent-a), var(--accent-b), #a78bfa, var(--accent-a));
+  background: conic-gradient(from var(--border-angle), var(--accent-a), var(--accent-b), #a78bfa, var(--accent-a));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0.6;
-  animation: border-spin 10s linear infinite;
+  animation: border-angle-spin 6s linear infinite;
   pointer-events: none;
   z-index: 3;
 }
 
-@keyframes border-spin {
-  to { transform: rotate(360deg); }
+@keyframes border-angle-spin {
+  to { --border-angle: 360deg; }
 }
 
 .feature-project__visual {
@@ -490,7 +498,7 @@ a { text-decoration: none; }
    efektlerini de durduruyordu. Bunlar büyük/hızlı bir hareket değil, ince bir
    nabız/parıltı olduğu için burada bilerek istisna tutuluyor. */
 @media (prefers-reduced-motion: reduce) {
-  .feature-project::before { animation-duration: 10s !important; }
+  .feature-project::before { animation-duration: 6s !important; }
   .feature-project__visual::before { animation-duration: 5s !important; }
   .feature-project__visual::after { animation-duration: 6.5s !important; }
   .feature-project__sweep { animation-duration: 7s !important; }
