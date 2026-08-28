@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// Scroll-linked 90-frame explode/reassemble hero (index.html only) + shared
+// Scroll-linked 130-frame explode/reassemble hero (index.html only) + shared
 // site chrome (nav, scroll-reveal, scroll progress — every page).
 // Pure vanilla HTML5 Canvas + rAF, no dependencies.
 // ---------------------------------------------------------------------------
@@ -11,7 +11,7 @@
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 window.scrollTo(0, 0);
 
-const TOTAL_FRAMES = 90;
+const TOTAL_FRAMES = 130;
 const FRAME_PATH = (i) => `assets/hero-frame-${String(i).padStart(3, '0')}.webp`;
 
 const canvas = document.getElementById('canvas');
