@@ -347,14 +347,41 @@ updatePageScrollProgress();
 // yoksa (diğer sayfalarda) sorunsuzca hiçbir şey yapmaz.
 // ---------------------------------------------------------------------------
 const YAKORRA_SCREENS = [
-  { src: 'assets/screenshots/yakorra-01-splash.webp', caption: 'Düşler kapısı açılıyor' },
-  { src: 'assets/screenshots/yakorra-02-anlat.webp', caption: 'Rüyanı anlat' },
-  { src: 'assets/screenshots/yakorra-03-gunlugum.webp', caption: 'Rüya günlüğün' },
-  { src: 'assets/screenshots/yakorra-04-dus-kuresi.webp', caption: 'Düş Küresi' },
-  { src: 'assets/screenshots/yakorra-05-uyku-sesler.webp', caption: 'Uyku & sesler' },
+  {
+    src: 'assets/screenshots/yakorra-01-splash.webp',
+    caption: 'Düşler kapısı açılıyor',
+    noteLeft: "Yakorra'ya hoş geldin",
+    noteRight: 'Kozmik, sakin bir karşılama',
+  },
+  {
+    src: 'assets/screenshots/yakorra-02-anlat.webp',
+    caption: 'Rüyanı anlat',
+    noteLeft: 'Sesli anlat, otomatik yazıya dökülsün',
+    noteRight: 'İstersen sadece yazarak da anlatabilirsin',
+  },
+  {
+    src: 'assets/screenshots/yakorra-03-gunlugum.webp',
+    caption: 'Rüya günlüğün',
+    noteLeft: 'Her rüya kendi kartında saklanır',
+    noteRight: 'Yapay zekâ görseli + üç ayrı yorum',
+  },
+  {
+    src: 'assets/screenshots/yakorra-04-dus-kuresi.webp',
+    caption: 'Düş Küresi',
+    noteLeft: 'Diğer rüyacıların paylaşımlarını keşfet',
+    noteRight: 'İstersen anonim bir rumuzla sen de paylaş',
+  },
+  {
+    src: 'assets/screenshots/yakorra-05-uyku-sesler.webp',
+    caption: 'Uyku & sesler',
+    noteLeft: 'Uyku skorunu takip et',
+    noteRight: 'Rahatlatıcı ses manzaralarıyla uykuya dal',
+  },
 ];
 
 const ssModal = document.getElementById('ssModal');
+const ssNotesLeft = document.getElementById('ssNotesLeft');
+const ssNotesRight = document.getElementById('ssNotesRight');
 const ssScreen = document.getElementById('ssScreen');
 const ssCaption = document.getElementById('ssCaption');
 const ssDots = document.getElementById('ssDots');
@@ -389,6 +416,35 @@ function ssMakeFrame(screen) {
   return frame;
 }
 
+// side: 'left' | 'right' — satırın içindeki çizgi her zaman telefona yakın
+// tarafta dursun diye sıra buna göre değişiyor.
+function ssRenderNote(container, side, text) {
+  if (!container) return;
+  container.innerHTML = '';
+  if (!text) return;
+
+  const note = document.createElement('div');
+  note.className = 'ss-modal__note';
+  const line = document.createElement('span');
+  line.className = 'ss-modal__note-line';
+  const label = document.createElement('span');
+  label.className = 'ss-modal__note-text';
+  label.textContent = text;
+
+  if (side === 'left') {
+    note.appendChild(label);
+    note.appendChild(line);
+  } else {
+    note.appendChild(line);
+    note.appendChild(label);
+  }
+  container.appendChild(note);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => note.classList.add('is-visible'));
+  });
+}
+
 // direction: 1 = ileri (yeni ekran sağdan gelir), -1 = geri (soldan gelir),
 // 0/undefined = yönsüz — ilk açılışta animasyonsuz anında yerleştirir.
 function ssShow(index, direction) {
@@ -401,6 +457,8 @@ function ssShow(index, direction) {
   Array.from(ssDots?.children || []).forEach((dot, i) => {
     dot.classList.toggle('is-active', i === ssIndex);
   });
+  ssRenderNote(ssNotesLeft, 'left', screen.noteLeft);
+  ssRenderNote(ssNotesRight, 'right', screen.noteRight);
 
   const newFrame = ssMakeFrame(screen);
 

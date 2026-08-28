@@ -586,6 +586,64 @@ a { text-decoration: none; }
   transform: rotate(90deg);
 }
 
+/* O an açık ekranı açıklayan küçük notlar — sadece yeterince geniş
+   ekranlarda telefonun sağında/solunda gösteriliyor, dar ekranlarda
+   telefon + oklar zaten yeterince yer kapladığı için gizleniyor. */
+.ss-modal__notes {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  width: 190px;
+  gap: 22px;
+}
+
+.ss-modal__notes--left { align-items: flex-end; }
+.ss-modal__notes--right { align-items: flex-start; }
+
+.ss-modal__note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.ss-modal__notes--left .ss-modal__note {
+  text-align: right;
+  transform: translateX(-8px);
+}
+
+.ss-modal__notes--right .ss-modal__note {
+  text-align: left;
+  transform: translateX(8px);
+}
+
+.ss-modal__note.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.ss-modal__note-line {
+  width: 26px;
+  height: 1px;
+  flex: none;
+  background: var(--border);
+}
+
+.ss-modal__note-text {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--body);
+}
+
+@media (min-width: 1180px) {
+  .ss-modal__notes { display: flex; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-modal__note { transition-duration: 0.4s !important; }
+}
+
 .ss-modal__stage {
   display: flex;
   align-items: center;
@@ -866,61 +924,6 @@ a { text-decoration: none; }
   transition: color 0.2s ease, border-color 0.2s ease;
 }
 .social-links a:hover { color: var(--accent-a); border-color: var(--accent-a); }
-
-/* ---------------------------------------------------------------------
-   Kenar etiketleri — geniş ekranlarda içerik sütununun sağında/solunda
-   boşta kalan alanı değerlendiren, sabit konumlu dikey açıklamalar. Dar
-   ekranlarda (içerik zaten kenara yakınken) gizleniyor, hiçbir zaman asıl
-   içerikle çakışmıyor (pointer-events: none, salt dekoratif).
-   ------------------------------------------------------------------- */
-.side-label {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 40;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  pointer-events: none;
-}
-
-.side-label__line {
-  width: 1px;
-  height: 56px;
-  background: linear-gradient(var(--border), transparent);
-}
-
-.side-label--right .side-label__line {
-  background: linear-gradient(transparent, var(--border));
-}
-
-.side-label__dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--gradient);
-  box-shadow: 0 0 12px rgba(34, 211, 238, 0.5);
-}
-
-.side-label__text {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--body);
-  white-space: nowrap;
-}
-
-.side-label--left { left: 36px; }
-.side-label--right { right: 36px; }
-
-@media (min-width: 1560px) {
-  .side-label { display: flex; }
-}
 
 /* Footer */
 .site-footer {
