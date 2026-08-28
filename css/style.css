@@ -468,24 +468,6 @@ a { text-decoration: none; }
   100% { transform: translateX(420%) skewX(-15deg); }
 }
 
-/* Yüzen ışıltı parçacıkları (uygulamadaki parçacık efektine gönderme) */
-.spark {
-  position: absolute;
-  border-radius: 50%;
-  background: #fff;
-  pointer-events: none;
-  z-index: 1;
-  animation: spark-twinkle 3.4s ease-in-out infinite;
-}
-@keyframes spark-twinkle {
-  0%, 100% { opacity: 0.12; transform: scale(0.7); }
-  50% { opacity: 1; transform: scale(1.3); }
-}
-@keyframes spark-drift {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-18px); }
-}
-
 .feature-project__icon {
   position: relative;
   z-index: 2;
@@ -501,6 +483,18 @@ a { text-decoration: none; }
 @keyframes icon-glow {
   0%, 100% { filter: drop-shadow(0 12px 30px rgba(126, 34, 206, 0.35)); }
   50% { filter: drop-shadow(0 22px 55px rgba(192, 132, 252, 0.65)); }
+}
+
+/* Sitenin genel "hareketi azalt" kuralı (yukarıda, tüm animasyon sürelerini
+   0.001ms'e indiriyor) bu kartın salt dekoratif, düşük genlikli ışık
+   efektlerini de durduruyordu. Bunlar büyük/hızlı bir hareket değil, ince bir
+   nabız/parıltı olduğu için burada bilerek istisna tutuluyor. */
+@media (prefers-reduced-motion: reduce) {
+  .feature-project::before { animation-duration: 10s !important; }
+  .feature-project__visual::before { animation-duration: 5s !important; }
+  .feature-project__visual::after { animation-duration: 6.5s !important; }
+  .feature-project__sweep { animation-duration: 7s !important; }
+  .feature-project__icon { animation-duration: 6s, 4s !important; }
 }
 
 .feature-project__body {
