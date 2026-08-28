@@ -54,9 +54,10 @@
   <section class="section page-hero reveal">
     <h2 class="section-title"><span class="num">01.</span> Projeler</h2>
     <article class="feature-project reveal">
-      <div class="feature-project__visual">
+      <div class="feature-project__visual" id="ssTrigger" role="button" tabindex="0" aria-label="Yakorra ekran görüntülerini gör">
         <div class="feature-project__sweep" aria-hidden="true"></div>
         <img src="assets/yakorra-logo.webp" alt="Yakorra" class="feature-project__icon">
+        <span class="feature-project__hint">📱 Ekran görüntülerini gör</span>
       </div>
       <div class="feature-project__body">
         <div class="project-tag">Öne Çıkan</div>
@@ -93,6 +94,26 @@
     <p>&copy; <span id="year"></span> Hasan Emre Güç. Tüm hakları saklıdır.</p>
   </div>
 </footer>
+
+<!-- ============ YAKORRA EKRAN GÖRÜNTÜSÜ GALERİSİ ============ -->
+<div class="ss-modal" id="ssModal">
+  <button class="ss-modal__close" id="ssModalClose" aria-label="Kapat">✕</button>
+  <div class="ss-modal__stage">
+    <button class="ss-modal__nav ss-modal__nav--prev" id="ssPrev" aria-label="Önceki ekran">‹</button>
+
+    <div class="ss-modal__phone-wrap">
+      <div class="ss-modal__phone" id="ssPhone">
+        <div class="ss-modal__screen" id="ssScreen">
+          <img src="" alt="" id="ssImage">
+        </div>
+      </div>
+      <p class="ss-modal__caption" id="ssCaption"></p>
+      <div class="ss-modal__dots" id="ssDots"></div>
+    </div>
+
+    <button class="ss-modal__nav ss-modal__nav--next" id="ssNext" aria-label="Sonraki ekran">›</button>
+  </div>
+</div>
 
 <script src="js/script.js"></script>
 </body>

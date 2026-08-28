@@ -340,3 +340,108 @@ window.addEventListener('scroll', () => {
   }
 }, { passive: true });
 updatePageScrollProgress();
+
+// ---------------------------------------------------------------------------
+// Yakorra ekran görüntüsü galerisi (projeler.html) — telefon çerçeveli modal,
+// oklar/noktalar/klavye/kaydırma ile gezinilebiliyor. Elemanlar bu sayfada
+// yoksa (diğer sayfalarda) sorunsuzca hiçbir şey yapmaz.
+// ---------------------------------------------------------------------------
+const YAKORRA_SCREENS = [
+  { src: 'assets/screenshots/yakorra-01-splash.webp', caption: 'Düşler kapısı açılıyor' },
+  { src: 'assets/screenshots/yakorra-02-anlat.webp', caption: 'Rüyanı anlat' },
+  { src: 'assets/screenshots/yakorra-03-gunlugum.webp', caption: 'Rüya günlüğün' },
+  { src: 'assets/screenshots/yakorra-04-dus-kuresi.webp', caption: 'Düş Küresi' },
+  { src: 'assets/screenshots/yakorra-05-uyku-sesler.webp', caption: 'Uyku & sesler' },
+];
+
+const ssModal = document.getElementById('ssModal');
+const ssScreen = document.getElementById('ssScreen');
+const ssImage = document.getElementById('ssImage');
+const ssCaption = document.getElementById('ssCaption');
+const ssDots = document.getElementById('ssDots');
+const ssPhone = document.getElementById('ssPhone');
+let ssIndex = 0;
+let ssSwitchTimer = null;
+
+function ssBuildDots() {
+  if (!ssDots) return;
+  ssDots.innerHTML = '';
+  YAKORRA_SCREENS.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'ss-modal__dot';
+    dot.setAttribute('aria-label', `${i + 1}. ekran`);
+    dot.addEventListener('click', () => ssShow(i));
+    ssDots.appendChild(dot);
+  });
+}
+
+function ssShow(index) {
+  ssIndex = (index + YAKORRA_SCREENS.length) % YAKORRA_SCREENS.length;
+  const screen = YAKORRA_SCREENS[ssIndex];
+
+  clearTimeout(ssSwitchTimer);
+  ssScreen?.classList.add('is-switching');
+  ssSwitchTimer = setTimeout(() => {
+    if (ssImage) {
+      ssImage.src = screen.src;
+      ssImage.alt = screen.caption;
+    }
+    if (ssCaption) ssCaption.textContent = screen.caption;
+    ssScreen?.classList.remove('is-switching');
+  }, 180);
+
+  Array.from(ssDots?.children || []).forEach((dot, i) => {
+    dot.classList.toggle('is-active', i === ssIndex);
+  });
+}
+
+function ssOpen(startIndex) {
+  if (!ssModal) return;
+  ssBuildDots();
+  ssShow(startIndex || 0);
+  ssModal.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+
+function ssClose() {
+  if (!ssModal) return;
+  ssModal.classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+
+const ssTrigger = document.getElementById('ssTrigger');
+ssTrigger?.addEventListener('click', () => ssOpen(0));
+ssTrigger?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    ssOpen(0);
+  }
+});
+
+document.getElementById('ssModalClose')?.addEventListener('click', ssClose);
+document.getElementById('ssPrev')?.addEventListener('click', () => ssShow(ssIndex - 1));
+document.getElementById('ssNext')?.addEventListener('click', () => ssShow(ssIndex + 1));
+ssModal?.addEventListener('click', (e) => {
+  if (e.target === ssModal) ssClose();
+});
+document.addEventListener('keydown', (e) => {
+  if (!ssModal?.classList.contains('is-open')) return;
+  if (e.key === 'Escape') ssClose();
+  if (e.key === 'ArrowLeft') ssShow(ssIndex - 1);
+  if (e.key === 'ArrowRight') ssShow(ssIndex + 1);
+});
+
+// Dokunmatik kaydırma (swipe) desteği
+let ssTouchStartX = null;
+ssPhone?.addEventListener('touchstart', (e) => {
+  ssTouchStartX = e.touches[0].clientX;
+}, { passive: true });
+ssPhone?.addEventListener('touchend', (e) => {
+  if (ssTouchStartX === null) return;
+  const dx = e.changedTouches[0].clientX - ssTouchStartX;
+  if (Math.abs(dx) > 40) {
+    ssShow(dx > 0 ? ssIndex - 1 : ssIndex + 1);
+  }
+  ssTouchStartX = null;
+});
