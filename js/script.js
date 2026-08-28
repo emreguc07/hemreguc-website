@@ -60,8 +60,14 @@ if (canvas) {
   const sharpLayerCtx = sharpLayer.getContext('2d');
 
   // ---- Retina-aware canvas sizing ----
+  // dpr is capped at 2: the hero footage is a 16:9 source drawn "fit-height"
+  // (see drawImageCoverTo), so on a tall portrait phone at dpr 3 the canvas
+  // height alone (e.g. ~2500px) would force the 1080px-tall source frames to
+  // stretch ~2.3x — visibly blurry regardless of source resolution. Capping
+  // at 2 keeps that upscale factor much smaller (and still reads as sharp;
+  // photographic/video content doesn't benefit from dpr 3 the way text does).
   function resizeCanvas() {
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const w = window.innerWidth;
     const h = window.innerHeight;
     canvas.width = Math.round(w * dpr);
