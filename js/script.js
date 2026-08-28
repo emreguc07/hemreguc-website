@@ -356,12 +356,12 @@ const YAKORRA_SCREENS = [
 
 const ssModal = document.getElementById('ssModal');
 const ssScreen = document.getElementById('ssScreen');
-const ssImage = document.getElementById('ssImage');
 const ssCaption = document.getElementById('ssCaption');
 const ssDots = document.getElementById('ssDots');
 const ssPhone = document.getElementById('ssPhone');
 let ssIndex = 0;
-let ssSwitchTimer = null;
+let ssCurrentFrame = null; // ekranda duran o an aktif .ss-modal__frame
+let ssAnimating = false;
 
 function ssBuildDots() {
   if (!ssDots) return;
@@ -371,34 +371,77 @@ function ssBuildDots() {
     dot.type = 'button';
     dot.className = 'ss-modal__dot';
     dot.setAttribute('aria-label', `${i + 1}. ekran`);
-    dot.addEventListener('click', () => ssShow(i));
+    dot.addEventListener('click', () => ssShow(i, i > ssIndex ? 1 : -1));
     ssDots.appendChild(dot);
   });
 }
 
-function ssShow(index) {
-  ssIndex = (index + YAKORRA_SCREENS.length) % YAKORRA_SCREENS.length;
-  const screen = YAKORRA_SCREENS[ssIndex];
+function ssMakeFrame(screen) {
+  const frame = document.createElement('div');
+  frame.className = 'ss-modal__frame';
+  const img = document.createElement('img');
+  img.src = screen.src;
+  img.alt = screen.caption;
+  const scrim = document.createElement('div');
+  scrim.className = 'ss-modal__frame-scrim';
+  frame.appendChild(img);
+  frame.appendChild(scrim);
+  return frame;
+}
 
-  clearTimeout(ssSwitchTimer);
-  ssScreen?.classList.add('is-switching');
-  ssSwitchTimer = setTimeout(() => {
-    if (ssImage) {
-      ssImage.src = screen.src;
-      ssImage.alt = screen.caption;
-    }
-    if (ssCaption) ssCaption.textContent = screen.caption;
-    ssScreen?.classList.remove('is-switching');
-  }, 180);
+// direction: 1 = ileri (yeni ekran sağdan gelir), -1 = geri (soldan gelir),
+// 0/undefined = yönsüz — ilk açılışta animasyonsuz anında yerleştirir.
+function ssShow(index, direction) {
+  const newIndex = (index + YAKORRA_SCREENS.length) % YAKORRA_SCREENS.length;
+  if (!ssScreen || (newIndex === ssIndex && ssCurrentFrame) || ssAnimating) return;
 
+  const screen = YAKORRA_SCREENS[newIndex];
+  ssIndex = newIndex;
+  if (ssCaption) ssCaption.textContent = screen.caption;
   Array.from(ssDots?.children || []).forEach((dot, i) => {
     dot.classList.toggle('is-active', i === ssIndex);
   });
+
+  const newFrame = ssMakeFrame(screen);
+
+  if (!direction || !ssCurrentFrame) {
+    // İlk açılış: doğrudan yerleştir, kaydırma animasyonu yok.
+    ssScreen.innerHTML = '';
+    ssScreen.appendChild(newFrame);
+    ssCurrentFrame = newFrame;
+    return;
+  }
+
+  const oldFrame = ssCurrentFrame;
+  ssAnimating = true;
+
+  // Başlangıç konumu: gelen ekran, gideceği yönün tam tersi kenarda bekliyor.
+  newFrame.style.transition = 'none';
+  newFrame.style.transform = `translateX(${direction * 100}%)`;
+  ssScreen.appendChild(newFrame);
+  // eslint-disable-next-line no-unused-expressions
+  newFrame.offsetWidth; // reflow: "transition: none" ile atanan konumu kesinleştir
+  newFrame.style.transition = '';
+
+  requestAnimationFrame(() => {
+    newFrame.style.transform = 'translateX(0)';
+    oldFrame.style.transform = `translateX(${direction * -30}%)`;
+    const oldScrim = oldFrame.querySelector('.ss-modal__frame-scrim');
+    if (oldScrim) oldScrim.style.opacity = '0.35';
+  });
+
+  setTimeout(() => {
+    oldFrame.remove();
+    ssCurrentFrame = newFrame;
+    ssAnimating = false;
+  }, 520);
 }
 
 function ssOpen(startIndex) {
   if (!ssModal) return;
   ssBuildDots();
+  ssIndex = -1; // ssShow'un ilk kareyi "değişmedi" sanıp atlamamasını sağlar
+  ssCurrentFrame = null;
   ssShow(startIndex || 0);
   ssModal.classList.add('is-open');
   document.body.style.overflow = 'hidden';
@@ -420,16 +463,16 @@ ssTrigger?.addEventListener('keydown', (e) => {
 });
 
 document.getElementById('ssModalClose')?.addEventListener('click', ssClose);
-document.getElementById('ssPrev')?.addEventListener('click', () => ssShow(ssIndex - 1));
-document.getElementById('ssNext')?.addEventListener('click', () => ssShow(ssIndex + 1));
+document.getElementById('ssPrev')?.addEventListener('click', () => ssShow(ssIndex - 1, -1));
+document.getElementById('ssNext')?.addEventListener('click', () => ssShow(ssIndex + 1, 1));
 ssModal?.addEventListener('click', (e) => {
   if (e.target === ssModal) ssClose();
 });
 document.addEventListener('keydown', (e) => {
   if (!ssModal?.classList.contains('is-open')) return;
   if (e.key === 'Escape') ssClose();
-  if (e.key === 'ArrowLeft') ssShow(ssIndex - 1);
-  if (e.key === 'ArrowRight') ssShow(ssIndex + 1);
+  if (e.key === 'ArrowLeft') ssShow(ssIndex - 1, -1);
+  if (e.key === 'ArrowRight') ssShow(ssIndex + 1, 1);
 });
 
 // Dokunmatik kaydırma (swipe) desteği
@@ -441,7 +484,7 @@ ssPhone?.addEventListener('touchend', (e) => {
   if (ssTouchStartX === null) return;
   const dx = e.changedTouches[0].clientX - ssTouchStartX;
   if (Math.abs(dx) > 40) {
-    ssShow(dx > 0 ? ssIndex - 1 : ssIndex + 1);
+    ssShow(dx > 0 ? ssIndex - 1 : ssIndex + 1, dx > 0 ? -1 : 1);
   }
   ssTouchStartX = null;
 });
