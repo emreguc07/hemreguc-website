@@ -667,6 +667,14 @@ a { text-decoration: none; }
   pointer-events: none;
 }
 
+/* Sitenin genel "hareketi azalt" kuralı transition-duration'ı da 0.001ms'e
+   indiriyor, bu da geçişi anlık/görünmez hale getiriyordu. Ekran değişimi
+   bu galerinin bütün amacı olduğu için burada bilerek istisna tutuluyor. */
+@media (prefers-reduced-motion: reduce) {
+  .ss-modal__frame { transition-duration: 0.5s !important; }
+  .ss-modal__frame-scrim { transition-duration: 0.5s !important; }
+}
+
 .ss-modal__caption {
   margin: 0;
   color: var(--body);
