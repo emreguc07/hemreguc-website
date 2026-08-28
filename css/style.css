@@ -32,9 +32,16 @@ h1, h2, h3, h4 {
   margin: 0;
 }
 
+/* Not: bu kural eskiden * seçiciyle TÜM elementleri kapsıyordu, bu da
+   sonradan eklenen her küçük UI geçişini (kart animasyonları, galeri
+   kaydırması vb.) sessizce anlık hale getirip "animasyon çalışmıyor" gibi
+   görünen hatalara yol açıyordu. Asıl amaç kaydırmaya bağlı büyük hero
+   parallax'ını (baş dönmesi riski taşıyan asıl unsur) yumuşatmaktı — o
+   yüzden kapsamı sadece scrolly hero'ya daraltıldı; küçük/dekoratif UI
+   geçişleri artık bu kısıtlamadan etkilenmiyor. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  *, *::before, *::after {
+  .scrolly-text, #canvas, .hero__scroll {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
   }
@@ -859,6 +866,61 @@ a { text-decoration: none; }
   transition: color 0.2s ease, border-color 0.2s ease;
 }
 .social-links a:hover { color: var(--accent-a); border-color: var(--accent-a); }
+
+/* ---------------------------------------------------------------------
+   Kenar etiketleri — geniş ekranlarda içerik sütununun sağında/solunda
+   boşta kalan alanı değerlendiren, sabit konumlu dikey açıklamalar. Dar
+   ekranlarda (içerik zaten kenara yakınken) gizleniyor, hiçbir zaman asıl
+   içerikle çakışmıyor (pointer-events: none, salt dekoratif).
+   ------------------------------------------------------------------- */
+.side-label {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  pointer-events: none;
+}
+
+.side-label__line {
+  width: 1px;
+  height: 56px;
+  background: linear-gradient(var(--border), transparent);
+}
+
+.side-label--right .side-label__line {
+  background: linear-gradient(transparent, var(--border));
+}
+
+.side-label__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gradient);
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.5);
+}
+
+.side-label__text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--body);
+  white-space: nowrap;
+}
+
+.side-label--left { left: 36px; }
+.side-label--right { right: 36px; }
+
+@media (min-width: 1560px) {
+  .side-label { display: flex; }
+}
 
 /* Footer */
 .site-footer {
